@@ -264,6 +264,10 @@ function setAdminState(state){
     loginBtn.style.display = '';
     logoutBtn.style.display = 'none';
   }
+
+  // Hide the profile avatar on public (non-logged-in) pages
+  profileAvatarEl.style.display = isAdmin ? '' : 'none';
+
   // persist session
   if(isAdmin) localStorage.setItem(AUTH_KEY, CREDENTIALS.user);
   else localStorage.removeItem(AUTH_KEY);
@@ -359,6 +363,11 @@ function tryRestoreSession(){
 }
 
 function render(){
+  // hide any element marked as private when not admin (panels, sections, etc.)
+  document.querySelectorAll('[data-private="true"]').forEach(el=>{
+    el.style.display = isAdmin ? '' : 'none';
+  });
+
   // toggle visible view
   document.querySelectorAll('.view').forEach(v=>{
     v.style.display = v.dataset.view === activeView ? '' : 'none';
