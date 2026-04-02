@@ -1,21 +1,10 @@
 /* Minimal link manager using localStorage. Single-screen, touch-friendly. Added drag-and-drop reorder and simple auth. */
-/* Import highlight.js core and common languages via esm.sh import map for syntax highlighting */
-import hljs from 'hljs-core';
-import javascript from 'hljs-js';
-import typescript from 'hljs-ts';
-import css from 'hljs-css';
-import xml from 'hljs-html';
-import python from 'hljs-python';
-import bash from 'hljs-bash';
-
-hljs.registerLanguage('javascript', javascript);
-hljs.registerLanguage('typescript', typescript);
-hljs.registerLanguage('css', css);
-hljs.registerLanguage('html', xml);
-hljs.registerLanguage('python', python);
-hljs.registerLanguage('bash', bash);
+/* Highlight.js eliminado para mejor rendimiento - no se usa actualmente */
 
 const STORAGE_KEY = 'links.v1';
+const STORAGE_CODE_KEY = 'codes.v1';
+const STORAGE_DELIVERY_KEY = 'delivery.v1';
+const AUTH_KEY = 'session.v1';
 const STORAGE_CODE_KEY = 'codes.v1';
 const STORAGE_DELIVERY_KEY = 'delivery.v1';
 const AUTH_KEY = 'session.v1'; // store username when logged in
