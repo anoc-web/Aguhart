@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<link rel="stylesheet" href="styles.css" />
+<!-- Highlight.js stylesheet (dark theme) -->
+<link rel="stylesheet" href="https://esm.sh/highlight.js@11.8.0/styles/github-dark.css" />
+<!-- import map for esm.sh modules -->
+<script type="importmap">
+{
+  "imports": {
+    "hljs-core": "https://esm.sh/highlight.js@11.8.0/lib/core",
+    "hljs-js": "https://esm.sh/highlight.js@11.8.0/lib/languages/javascript",
+    "hljs-ts": "https://esm.sh/highlight.js@11.8.0/lib/languages/typescript",
+    "hljs-css": "https://esm.sh/highlight.js@11.8.0/lib/languages/css",
+    "hljs-html": "https://esm.sh/highlight.js@11.8.0/lib/languages/xml",
+    "hljs-python": "https://esm.sh/highlight.js@11.8.0/lib/languages/python",
+    "hljs-bash": "https://esm.sh/highlight.js@11.8.0/lib/languages/bash"
+  }
+}
+</script>
+</head>
+<body>
+<main id="app">
+  <!-- Header menu -->
+  <header class="topbar">
+    <nav class="tabs" role="tablist" aria-label="Secciones">
+      <button class="tab active" id="tab-links" data-view="links" data-private="true" role="tab" aria-selected="true">Aguhart</button>
+      <button class="tab" id="tab-code" data-view="code" data-private="true" role="tab" aria-selected="false">Pedidos</button>
+      <button class="tab" id="tab-delivery" data-view="delivery" data-private="true" role="tab" aria-selected="false">Reparto</button>
+      <button class="tab" id="tab-clients" data-view="clients" data-private="true" role="tab" aria-selected="false">Clientes</button>
+      <button class="tab" id="tab-map" data-view="map" data-private="true" role="tab" aria-selected="false">Mapa</button>
+    </nav>
+  </header>
+
+  <!-- Links view -->
+  <section class="view view-links" data-view="links">
+    <div class="panel" style="margin-bottom:10px;padding:0;overflow:hidden">
+      <video id="aguhartVideo" src="videoplayback.mp4" playsinline autoplay muted loop></video>
+    </div>
+
+
+    <section class="panel list-panel" aria-label="Lista de productos">
+      <div class="controls"></div>
+      <ul id="list" class="links"></ul>
+    </section>
+  </section>
+
+  <!-- Code view (Pedidos) -->
+  <section class="view view-code" data-view="code" style="display:none;">
+    <section class="panel add-panel" aria-label="Pedidos">
+      <div class="row" style="flex-direction:column;gap:8px">
+        <input id="codeTitle" placeholder="Nombre del cliente" autocomplete="name" />
+        <input id="codePhone" placeholder="Teléfono" inputmode="tel" autocomplete="tel" />
+        <input id="codeAddress" placeholder="Dirección de entrega" autocomplete="street-address" />
+        <input id="codeProduct" placeholder="Producto (ej. Agua 500ml)" autocomplete="off" />
+        <div style="display:flex;gap:8px;align-items:center">
+          <input id="codeQuantity" type="number" min="1" value="1" style="max-width:120px" />
+          <div style="color:var(--muted);font-size:13px">Cantidad</div>
+        </div>
+        <textarea id="codeNote" placeholder="Nota (opcional)" rows="3"></textarea>
+      </div>
+      <div class="row actions">
+        <div class="actions-left">
+          <button id="addCode" class="primary">Agregar pedido</button>
+        </div>
+        <div class="actions-right">
+          <button id="clearCode" class="secondary">Limpiar</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel list-panel" aria-label="Pedidos recibidos">
+      <div class="controls">
+        <input id="searchCode" placeholder="Buscar pedidos" />
+      </div>
+      <ul id="codeList" class="links"></ul>
+      <div id="emptyCode" class="empty">No hay pedidos.</div>
+    </section>
+  </section>
+
+  <template id="itemTpl">
+    <li class="item product-item">
+      <a class="link" target="_blank" rel="noopener noreferrer">
+        <div class="meta" style="display:flex;gap:10px;align-items:center">
+          <div style="width:56px;height:56px;border-radius:8px;overflow:hidden;flex:0 0 56px;background:rgba(255,255,255,0.02)">
+            <img class="thumb" src="" alt="" style="width:100%;height:100%;object-fit:cover">
+          </div>
+          <div style="flex:1">
+            <div class="title"></div>
+            <div class="price"></div>
+          </div>
+        </div>
+      </a>
+      <div class="badge-row"></div>
+      <div class="item-actions">
+        <button class="open" title="Ver">👁️</button>
+        <button class="copy" title="Comprar">🛒</button>
+        <button class="edit" title="Editar">✏️</button>
+        <button class="delete" title="Eliminar">🗑️</button>
+      </div>
+    </li>
+  </template>
+
+  <!-- Reparto view -->
+  <section class="view view-delivery" data-view="delivery" style="display:none;">
+    <section class="panel add-panel" aria-label="Reparto">
+      <div class="row" style="flex-direction:column;gap:8px">
+        <input id="deliveryName" placeholder="Nombre repartidor / cliente" autocomplete="off" />
+        <input id="deliveryAddr" placeholder="Dirección" autocomplete="off" />
+        <input id="deliveryNote" placeholder="Nota (opcional)" autocomplete="off" />
+      </div>
+      <div class="row actions">
+        <div class="actions-left">
+          <button id="addDelivery" class="primary">Agregar reparto</button>
+        </div>
+        <div class="actions-right">
+          <button id="clearDelivery" class="secondary">Limpiar</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel list-panel" aria-label="Repartos realizados">
+      <div class="controls">
+        <input id="searchDelivery" placeholder="Buscar repartos" />
+      </div>
+      <ul id="deliveryList" class="links"></ul>
+      <div id="emptyDelivery" class="empty">No hay repartos.</div>
+    </section>
+  </section>
+
+  <!-- Clientes view -->
+  <section class="view view-clients" data-view="clients" style="display:none;">
+    <section class="panel" aria-label="Clientes">
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="color:var(--muted);font-size:14px">Lista de clientes. Agrega clientes desde Pedidos o crea manualmente en futuras versiones.</div>
+        <div style="margin-top:8px">
+          <ul id="clientsList" class="links"></ul>
+          <div id="emptyClients" class="empty">No hay clientes.</div>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <!-- Mapa view -->
+  <section class="view view-map" data-view="map" style="display:none;">
+    <section class="panel" aria-label="Mapa de repartos">
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="color:var(--muted);font-size:14px">Mapa centrado en Junín, Provincia de Buenos Aires — abre direcciones de repartos en Google Maps</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button id="openMap" class="primary" style="min-width:160px">Cargar mapa de Junín</button>
+          <button id="openMapAll" class="secondary" style="min-width:160px">Abrir todas en Google Maps</button>
+        </div>
+        <div id="mapContainer" style="margin-top:8px;border-radius:10px;overflow:hidden">
+          <!-- initial embedded map centered on Junín; using maps.google.com embed without API key -->
+          <iframe id="mapFrame" src="https://www.google.com/maps?q=Jun%C3%ADn+Buenos+Aires+Argentina&output=embed" style="width:100%;height:300px;border:0;" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+        <div id="mapHint" style="color:var(--muted);font-size:13px">Puedes cargar el mapa de Junín aquí o abrir direcciones individuales en Google Maps.</div>
+      </div>
+    </section>
+  </section>
+
+  <!-- template for code item -->
+  <template id="codeTpl">
+    <li class="item code-item">
+      <div class="meta" style="flex:1">
+        <div class="title"></div>
+        <pre class="code" style="margin:6px 0;padding:8px;border-radius:8px;background:rgba(255,255,255,0.02);overflow:auto;max-height:160px"></pre>
+      </div>
+      <div class="item-actions">
+        <button class="copy" title="Copiar código">📋</button>
+        <button class="edit" title="Editar">✏️</button>
+        <button class="delete" title="Eliminar">🗑️</button>
+      </div>
+    </li>
+  </template>
+</main>
+
+<!-- Footer with Login/Logout and Profile -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-actions">
+      <button id="loginBtn" class="link-btn icon" title="Login">🔒</button>
+      <button id="logoutBtn" class="link-btn" title="Logout" style="display:none">Logout</button>
+    </div>
+    <div class="profile-area">
+      <img id="profileAvatar" class="profile-avatar" src="https://www.gravatar.com/avatar/?d=mp" alt="avatar" />
+      <div id="profileName" class="profile-name">Guest</div>
+    </div>
+    <div id="statusBadge" class="status-badge">Guest</div>
+  </div>
+</footer>
+
+<!-- Login overlay (hidden by default) -->
+<div id="loginOverlay" class="overlay" aria-hidden="true">
+  <div class="overlay-panel" role="dialog" aria-modal="true" aria-label="Login">
+    <div class="form-row">
+      <input id="loginUser" placeholder="Username" autocomplete="username" />
+    </div>
+    <div class="form-row">
+      <input id="loginPass" placeholder="Password" type="password" autocomplete="current-password" />
+    </div>
+    <div class="form-row form-actions">
+      <button id="doLogin" class="primary">Entrar</button>
+      <button id="cancelLogin" class="secondary">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Profile overlay (edit name + avatar URL) -->
+<div id="profileOverlay" class="overlay" aria-hidden="true">
+  <div class="overlay-panel" role="dialog" aria-modal="true" aria-label="Editar perfil">
+    <h3 style="margin-top:0;margin-bottom:8px">Perfil</h3>
+    <div class="form-row">
+      <input id="profileNameInput" placeholder="Nombre" autocomplete="name" />
+    </div>
+    <div class="form-row">
+      <input id="profileAvatarInput" placeholder="URL avatar (opcional)" autocomplete="off" />
+    </div>
+    <div class="form-row" style="display:flex;gap:8px;justify-content:flex-end">
+      <button id="saveProfile" class="primary">Guardar</button>
+      <button id="cancelProfile" class="secondary">Cancelar</button>
+    </div>
+    <div class="hint">Tu perfil se guarda localmente en este navegador.</div>
+  </div>
+</div>
+
+<!-- Notification toast -->
+<div id="toast" class="toast" aria-live="polite" role="status"></div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
